@@ -1,0 +1,19 @@
+- If you want to stop remote desktop service on some domain machines, you can create a GPO and apply it to the OU containing the computers. The GPO needs to be set as follows.
+
+On the edit screen of the GPO, go to Computer Configuration > Policies > Windows Settings > Security Settings > System Services
+Select 'Remote Desktop Services' and Disable it
+Select 'Remote Desktop Services UserMode Port Redirector' and Disable it
+
+- If you need to stop the service right away, you can create a startup script that runs the command to stop the service. Will also add this to my GPO.
+- There is a dependency on the RDP service (Remote Desktop Services). Another service is dependant to it. Therefore, to be able to stop it you need to stop the other service as well. So I’ll stop the ‘Remote Desktop Services UserMode Port Redirector’ service first, then will stop ‘Remote Desktop Services’.
+- To stop more than one service I need to create a script. So, will create a bash script named StopRDPSrvices.bat containing two sc stop commands below. Please note you need to use the service names in the bash script.
+
+@echo off
+sc stop UmRdpService
+sc stop TermService
+
+- Then, using this script, add the following settings to your GPO.
+
+On the edit screen of the GPO, go to Computer Configuration > Policies > Windows Settings > Scripts (Startup/Shutdown)
+Select Startup
+Under Scripts tab, add the StopRDPSrvices.bat script
